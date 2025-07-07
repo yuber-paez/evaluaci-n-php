@@ -1,15 +1,14 @@
-<?php 
-require '../config/database.php';
+<?php
+require_once('../config/database.php');
 
 $db = new Database();
 $con = $db->conectar();
+session_start();
+if ($_POST["inicio"]) {
 
-if($_POST["inicio"])
-{
-   
     $doc = $_POST['usuario'];
     $contra = $_POST['clave'];
-    
+
 
     $sql = $con->prepare("SELECT * FROM user WHERE doc = '$doc' AND pass = '$contra'");
     $sql->execute();
@@ -17,10 +16,12 @@ if($_POST["inicio"])
 
 
     if ($fila) {
-        $_SESSION['doc_user'] = $fila ['doc'];
-        $_SESSION['tipo'] = $fila ['id_rol'];
+        $_SESSION['doc_user'] = $fila['doc'];
+        $_SESSION['tipo'] = $fila['id_rol'];
 
         if ($_SESSION['tipo'] == 1) {
+
+
             header("Location: ../rutas/admin/index.php");
             exit();
         }
@@ -35,14 +36,8 @@ if($_POST["inicio"])
             exit();
         }
     }
-
-
+} else {
+    echo "<script>alert('Credenciales invalidas o usuario inactivo.')</script>";
+    echo "<script>window.location='../index.php'</script>";
+    exit();
 }
-else
-{
- echo"<script>alert('Credenciales invalidas o usuario inactivo.')</script>";
- echo"<script>window.location='../index.php'</script>";
- exit();
-
-}	
-?>
