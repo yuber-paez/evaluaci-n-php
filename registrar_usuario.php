@@ -1,11 +1,54 @@
 <?php
-require 'config/database.php';
+session_start();
+require_once("config/database.php");
 $db = new Database();
 $con = $db->conectar();
+
+
 
 //destruir la sesion y borrar todo lo que haya en la pagina
 
 //session_destroy();
+
+?>
+
+
+<?php
+
+if (isset($_POST['save'])) {
+
+    $doc = $_POST['document'];
+    $name = $_POST['names'];
+    $tel = $_POST['phone'];
+    $email = $_POST['email'];
+    $profes = $_POST['profesion'];  
+    $pass = $_POST['contra'];
+    $des = $_POST['desc_perfil'];
+    $id_rol = $_POST['rol'];
+
+    $sql = $con->prepare(query:"SELECT * FROM user WHERE doc = '$doc'");
+    $sql->execute();
+    $fila = $sql->fetchAll(mode: PDO::FETCH_ASSOC);
+    
+    if ($fila)
+    {
+        echo '<script>alert ("DOCUMENTO O USUARIO EXISTENTE// INGRESE OTROS DATOS");</script>';
+    }
+
+    elseif ($doc=="" || $name=="" || $tel=="" || $email=="" || $profes=="" || $pass=="" || $id_rol=="")
+        {
+            echo '<script>alert ("EXISTEN CAMPOS VACIOS");</script>';
+            echo '<script>window.location="index.php"</script>';
+        }
+
+    else
+    {
+        $insertSQL = $con->prepare(query:"INSERT INTO user(`doc`, `name`, `tel`, `email`, `profes`, `pass`, `des`, `id_rol`) VALUES ('$doc', '$name', '$tel', '$email', '$profes', '$pass', '$des', '$id_rol')");
+        $insertSQL->execute();
+        echo '<script>alert (" REGISTRO EXITOSO ");</script>';
+        echo '<script>window.location ="index.html"</script>';
+    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -56,12 +99,12 @@ $con = $db->conectar();
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top py-0 pe-5">
         <a href="index.html" class="navbar-brand ps-5 me-0">
-            <img src="img/logo3.png">
+            <img src="img/php.png" height="20px" width="20px">
         </a>
-       
+
         <div class="collapse navbar-collapse" id="navbarCollapse">
-        
-               
+
+
         </div>
     </nav>
     <!-- Navbar End -->
@@ -70,19 +113,19 @@ $con = $db->conectar();
 
     <!-- Service Start -->
     <div class="container-xxl py-5">
-    <div class="container-fluid" style="border-top: 1px solid #E1E1E1; padding: 20px; ">
-                <div class="row gy-5 gx-4">
+        <div class="container-fluid" style="border-top: 1px solid #E1E1E1; padding: 20px; ">
+            <div class="row gy-5 gx-4">
                 <legend>Registre sus datos y pague la suscripción anual para tener acceso a la bolsa de empleo.</legend>
-                    </div>
-                </div>
+            </div>
         </div>
-        <div class="container">
-   
+    </div>
+    <div class="container">
 
-<form class="dashboard-container FormularioAjax" method="POST" data-form="save" data-lang="es" autocomplete="off" action="save_user.php" enctype="multipart/form-data" >
-        <input type="hidden" name="modulo_producto" value="registro">
-        <fieldset class="mb-4">
-            <legend><i class="fas fa-box"></i> &nbsp; Información Personal</legend>
+
+        <form class="dashboard-container FormularioAjax" method="POST" data-form="save" data-lang="es" autocomplete="off" enctype="multipart/form-data">
+            <input type="hidden" name="modulo_producto" value="registro">
+            <fieldset class="mb-4">
+                <legend><i class="fas fa-box"></i> &nbsp; Información Personal</legend>
                 <div class="container-fluid"><br>
                     <div class="row">
                         <div class="col-12 col-md-6">
@@ -98,79 +141,90 @@ $con = $db->conectar();
                                 <div class="mb-4">
                                     <div class="form-outline mb-4">
                                         <label for="names" class="nav-link"><i class="fas fa-user"></i> &nbsp;<strong>Nombres Completos</strong></label>
-                                        <input type="text" value="" onkeyup="mayus(this);"  pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().!#$%&’*+/=?^_`{|}~-].,\s ]{4,520}" class="form-control" name="names" id="names" maxlength="90" placeholder="Obligatorio" text-transform="capitalize" required>
+                                        <input type="text" value="" onkeyup="mayus(this);" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().!#$%&’*+/=?^_`{|}~-].,\s ]{4,520}" class="form-control" name="names" id="names" maxlength="90" placeholder="Obligatorio" text-transform="capitalize" required>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-        </fieldset>
-        <fieldset class="mb-4">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <div class="col-12 col-md-9">
+            </fieldset>
+            <fieldset class="mb-4">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-9">
+                                <div class="form-outline mb-4">
+                                    <div class="mb-4">
+
+                                        <div class="form-outline mb-4">
+                                            <label for="phone" class="nav-link"><i class="fas fa-phone"></i> &nbsp;<strong>No. Celular </strong></label>
+                                            <input type="text" pattern="[0-9]{10,10}" class="form-control" name="phone" id="phone" maxlength="10" placeholder="Obligatorio" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="profesion" class="nav-link"><i class="fas fa-user"></i> &nbsp;<strong>Profesión</strong></label>
+                                        <input type="text" value="" onkeyup="mayus(this);" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().!#$%&’*+/=?^_`{|}~-].,\s ]{4,520}" class="form-control" name="profesion" id="profesion" maxlength="90" placeholder="Obligatorio" text-transform="capitalize" required>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-outline mb-4">
                                 <div class="mb-4">
-                                    
-                                <div class="form-outline mb-4">
-                                    <label for="phone" class="nav-link"><i class="fas fa-phone"></i> &nbsp;<strong>No. Celular </strong></label>
-                                    <input type="text" pattern="[0-9]{10,10}" class="form-control" name="phone" id="phone" maxlength="10" placeholder="Obligatorio" required>
-                                </div>
-                                </div>
-
-                                <div class="mb-4">
-                                <label for="profesion" class="nav-link"><i class="fas fa-user"></i> &nbsp;<strong>Profesión</strong></label>
-                                        <input type="text" value="" onkeyup="mayus(this);" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().!#$%&’*+/=?^_`{|}~-].,\s ]{4,520}" class="form-control" name="profesion" id="profesion" maxlength="90" placeholder="Obligatorio" text-transform="capitalize" required>
-                                   
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="form-outline mb-4">
-                            <div class="mb-4">
                                     <label for="email" class="nav-link"><i class="fas fa-envelope"></i> &nbsp;<strong>Email</strong></label>
-                                    <input type="email"  onkeyup="minus(this);" pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}" class="form-control" name="email" id="email" maxlength="40" required>
+                                    <input type="email" onkeyup="minus(this);" pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}" class="form-control" name="email" id="email" maxlength="40" required>
+                                </div>
+                            </div>
+                            <div class="form-outline mb-4">
+                                <label for="contra" class="nav-link"><i class="fas fa-key"></i> &nbsp;<strong>Contraseña Mín 8 Max 10 caracteres. </strong></label>
+                                <input type="password" pattern="[A-Za-z0-9!?-]{8,10}" class="form-control" name="contra" id="contra" maxlength="10" placeholder="Obligatorio" required>
                             </div>
                         </div>
-                        <div class="form-outline mb-4">
-                                    <label for="contra" class="nav-link"><i class="fas fa-key"></i> &nbsp;<strong>Contraseña Mín 8 Max 10 caracteres. </strong></label>
-                                    <input type="password" pattern="[A-Za-z0-9!?-]{8,10}" class="form-control" name="contra" id="contra" maxlength="10" placeholder="Obligatorio" required>
-                                </div>
-                    </div>  
 
-                    
-                        <div class="form-outline mb-4">
-                                    <label for="contra" class="nav-link"><i class="fas fa-user"></i> &nbsp;<strong>Tipo Usuario </strong></label>
-                                    <select class="form-control">
-                                        <option value=""></option>
-                                    </select>
-                                </div>
-                    </div> 
-                    
-                </div>
-            </div>
-            
-        </fieldset>
-       
 
-       
-        <fieldset class="mb-4">
-            <legend><i class="far fa-comment-dots"></i> &nbsp; Descripción del Perfil </legend>
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
                         <div class="form-outline mb-4">
-                            <textarea pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().,#\s ]{4,520}" class="form-control" name="desc_perfil" id="desc_perfil" maxlength="400" rows="7" placeholder="Describa su perfil profesional y laboral brevemente." required></textarea>
-                            
+                            <label for="contra" class="nav-link"><i class="fas fa-user"></i> &nbsp;<strong>Tipo Usuario </strong></label>
+                            <select class="form-control" name="rol">
+                                <option value=""></option>
+                                <?php 
+                                
+                                $control = $con->prepare(query:"SELECT * FROM rol WHERE id_rol > 2");
+                                $control -> execute();
+
+                                while ($fila = $control->fetch(mode: PDO::FETCH_ASSOC)) {
+                                    echo "<option value=" . $fila['id_rol'] . ">" . $fila['rol'] . "</option>";
+                                }
+
+                                ?>
+
+                            </select>
                         </div>
+                    </div>
+
+                </div>
+    </div>
+
+    </fieldset>
+
+
+
+    <fieldset class="mb-4">
+        <legend><i class="far fa-comment-dots"></i> &nbsp; Descripción del Perfil </legend>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-outline mb-4">
+                        <textarea pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().,#\s ]{4,520}" class="form-control" name="desc_perfil" id="desc_perfil" maxlength="400" rows="7" placeholder="Describa su perfil profesional y laboral brevemente." required></textarea>
+
                     </div>
                 </div>
             </div>
-        </fieldset>
-        <!-- <fieldset class="mb-4">
+        </div>
+    </fieldset>
+    <!-- <fieldset class="mb-4">
             <legend><i class="far fa-file-image"></i> &nbsp; Foto </legend>
             <div class="container-fluid">
                 <div class="row">
@@ -181,19 +235,19 @@ $con = $db->conectar();
                 </div>    
             </div>    
         </fieldset> -->
-        <p class="text-center">
-            <strong><small>Los campos marcados con * son obligatorios</small></strong>
-        </p>           
-        
-        <p class="text-center" style="margin-top: 40px;">
-            <button type="submit" class="btn btn-primary" name="save"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
-        </p>
-        
-    </form>
-<?php 
+    <p class="text-center">
+        <strong><small>Los campos marcados con * son obligatorios</small></strong>
+    </p>
 
- include 'footer/footer.html';
-?>
+    <p class="text-center" style="margin-top: 40px;">
+        <button type="submit" class="btn btn-primary" name="save"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
+    </p>
+
+    </form>
+    <?php
+
+    include 'footer/footer.html';
+    ?>
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i
@@ -213,11 +267,11 @@ $con = $db->conectar();
     <script src="js/main.js"></script>
     <script>
         function mayus(e) {
-        e.value = e.value.toUpperCase();
+            e.value = e.value.toUpperCase();
         }
 
         function minus(e) {
-        e.value = e.value.toLowerCase();
+            e.value = e.value.toLowerCase();
         }
     </script>
 </body>

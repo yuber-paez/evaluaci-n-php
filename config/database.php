@@ -8,7 +8,7 @@ class Database
     //  private $password = "Tomas@na4911";
     //  private $chasrset = "utf8";
 
-     private $hostname = "localhost";
+     private $hostname = "127.0.0.1";
      private $database = "meraki";
      private $username = "root";
      private $password = "";
