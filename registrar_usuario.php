@@ -46,7 +46,7 @@ if (isset($_POST['save'])) {
         $insertSQL = $con->prepare(query:"INSERT INTO user(`doc`, `name`, `tel`, `email`, `profes`, `pass`, `des`, `id_rol`) VALUES ('$doc', '$name', '$tel', '$email', '$profes', '$pass', '$des', '$id_rol')");
         $insertSQL->execute();
         echo '<script>alert (" REGISTRO EXITOSO ");</script>';
-        echo '<script>window.location ="index.html"</script>';
+        echo '<script>window.location ="index.php"</script>';
     }
 }
 
@@ -99,7 +99,7 @@ if (isset($_POST['save'])) {
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top py-0 pe-5">
         <a href="index.html" class="navbar-brand ps-5 me-0">
-            <img src="img/php.png" height="20px" width="20px">
+            <img src="img/php.png" height="50px" width="50px">
         </a>
 
         <div class="collapse navbar-collapse" id="navbarCollapse">
